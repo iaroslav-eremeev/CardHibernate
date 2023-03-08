@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 @WebServlet("/categories")
 public class CategoryServlet extends HttpServlet {
@@ -78,8 +77,9 @@ public class CategoryServlet extends HttpServlet {
             Category category = (Category) DAO.getObjectById(Integer.parseInt(id), Category.class);
             DAO.closeOpenedSession();
             if (category != null){
-                if (DAO.getObjectById(Integer.parseInt(userId), User.class) != null){
-                    DAO.closeOpenedSession();
+                User user = (User) DAO.getObjectById(Integer.parseInt(userId), User.class);
+                DAO.closeOpenedSession();
+                if (user != null){
                     DAO.updateObject(category);
                     resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(category)));
                 }
