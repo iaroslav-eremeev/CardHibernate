@@ -75,29 +75,22 @@ public class CategoryServlet extends HttpServlet {
         String name = req.getParameter("name");
         String userId = req.getParameter("userId");
         if(id != null & name != null && userId != null) {
-            try (CategoryRepository categoryRepository = new CategoryRepository();
-                    UserRepository userRepository = new UserRepository()){
-                Category oldCategory = categoryRepository.get(Integer.parseInt(id));
-                if (oldCategory != null){
-                    if (userRepository.get(Integer.parseInt(userId)) != null){
-                        Category newCategory =
-                                new Category(Integer.parseInt(id), name, Integer.parseInt(userId));
-                        categoryRepository.update(newCategory);
-                        resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(newCategory)));
-                    }
-                    else {
-                        resp.setStatus(400);
-                        resp.getWriter().println("There is no user with such user id!");
-                    }
+            Category category = (Category) DAO.getObjectById(Integer.parseInt(id), Category.class);
+            DAO.closeOpenedSession();
+            if (category != null){
+                if (DAO.getObjectById(Integer.parseInt(userId), User.class) != null){
+                    DAO.closeOpenedSession();
+                    DAO.updateObject(category);
+                    resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(category)));
                 }
                 else {
                     resp.setStatus(400);
-                    resp.getWriter().println("There is no category to update with such id!");
+                    resp.getWriter().println("There is no user with such user id!");
                 }
-            } catch (Exception e) {
+            }
+            else {
                 resp.setStatus(400);
-                resp.getWriter().println("Database loading failed. Check connection");
+                resp.getWriter().println("There is no category to update with such id!");
             }
         }
         else {
@@ -113,19 +106,14 @@ public class CategoryServlet extends HttpServlet {
         ObjectMapper objectMapper = new ObjectMapper();
         String id = req.getParameter("id");
         if (id != null) {
-            try (CategoryRepository categoryRepository = new CategoryRepository()) {
-                Category categoryToDelete = categoryRepository.get(Integer.parseInt(id));
-                if (categoryToDelete != null) {
-                    categoryRepository.delete(categoryToDelete);
-                    resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(categoryToDelete)));
-                } else {
-                    resp.setStatus(400);
-                    resp.getWriter().println("There is no category with such id!");
-                }
-            } catch (Exception e) {
+            Category categoryToDelete = (Category) DAO.getObjectById(Integer.parseInt(id), Category.class);
+            DAO.closeOpenedSession();
+            if (categoryToDelete != null) {
+                DAO.deleteObject(categoryToDelete);
+                resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(categoryToDelete)));
+            } else {
                 resp.setStatus(400);
-                resp.getWriter().println("Database loading failed. Check connection");
+                resp.getWriter().println("There is no category with such id!");
             }
         }
         else {
