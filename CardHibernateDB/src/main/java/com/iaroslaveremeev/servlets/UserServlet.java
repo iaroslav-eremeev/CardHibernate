@@ -1,6 +1,7 @@
 package com.iaroslaveremeev.servlets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iaroslaveremeev.DAO.DAO;
 import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.User;
 import com.iaroslaveremeev.repository.UserRepository;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/users")
 public class UserServlet extends HttpServlet {
@@ -21,20 +23,19 @@ public class UserServlet extends HttpServlet {
         Unicode.setUnicode(req, resp);
         ObjectMapper objectMapper = new ObjectMapper();
         String id = req.getParameter("id");
-        try (UserRepository userRepository = new UserRepository()){
-            if (id != null){
-                User user = userRepository.get(Integer.parseInt(id));
-                if (user != null) {
-                    resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
-                }
-                else {
-                    resp.setStatus(400);
-                    resp.getWriter().println("There is no user with such id!");
-                }
-            } else {
-                resp.setStatus(400);
-                resp.getWriter().println("Incorrect id input!");
+        if (id != null){
+            User user = (User) DAO.getObjectById(Integer.parseInt(id), User.class);
+            if (user != null) {
+                resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
             }
+            else {
+                resp.setStatus(400);
+                resp.getWriter().println("There is no user with such id!");
+            }
+        }
+        else {
+            resp.setStatus(400);
+            resp.getWriter().println("Incorrect id input!");
         }
     }
 
@@ -47,20 +48,19 @@ public class UserServlet extends HttpServlet {
         String password = req.getParameter("password");
         boolean success = false;
         if(login != null && password != null) {
-            try (UserRepository userRepository = new UserRepository()) {
-                for (int i = 0; i < userRepository.getAll().size(); i++) {
-                    User user = userRepository.getAll().get(i);
-                    String userPassword = user.getPassword();
-                    if (login.equals(user.getLogin()) && password.equals(userPassword)){
-                        success = true;
-                        resp.getWriter()
-                                .println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
-                    }
+            List users = DAO.getAllObjects(User.class);
+            for (int i = 0; i < users.size(); i++) {
+                User user = (User) users.get(i);
+                String userPassword = user.getPassword();
+                if (login.equals(user.getLogin()) && password.equals(userPassword)){
+                    success = true;
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
                 }
-                if (!success) {
-                    resp.setStatus(400);
-                    resp.getWriter().println("Authorization failure. Wrong login or password");
-                }
+            }
+            if (!success) {
+                resp.setStatus(400);
+                resp.getWriter().println("Authorization failure. Wrong login or password");
             }
         }
         else {
