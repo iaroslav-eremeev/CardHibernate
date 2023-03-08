@@ -65,8 +65,10 @@ public class CardServlet extends HttpServlet {
        }
        else if (categoryId != null){
             Category category = (Category) DAO.getObjectById(Integer.parseInt(categoryId), Category.class);
+            DAO.closeOpenedSession();
             if (category != null){
                 List cards = DAO.getObjectsByParam("categoryId", categoryId, Card.class);
+                DAO.closeOpenedSession();
                 resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(cards)));
             }
             else {
@@ -89,24 +91,15 @@ public class CardServlet extends HttpServlet {
         String answer = req.getParameter("answer");
         String categoryId = req.getParameter("categoryId");
         if (id != null && question != null && answer != null && categoryId != null){
-            try (CardRepository cardRepository = new CardRepository();
-                 CategoryRepository categoryRepository = new CategoryRepository()){
-                Card oldCard = cardRepository.get(Integer.parseInt(id));
-                if (oldCard != null && categoryRepository.get(Integer.parseInt(categoryId)) != null){
-                    Card newCard = new Card(oldCard.getId(), question, answer,
-                            Integer.parseInt(categoryId), oldCard.getCreationDate());
-                    cardRepository.update(newCard);
-                    resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(newCard)));
-                }
-                else {
-                    resp.setStatus(400);
-                    resp.getWriter().println("There is no card or category with such id!");
-                }
+            Card card = (Card) DAO.getObjectById(Integer.parseInt(id), Card.class);
+            DAO.closeOpenedSession();
+            if (card != null){
+                DAO.updateObject(card);
+                resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(card)));
             }
-            catch (Exception e){
+            else {
                 resp.setStatus(400);
-                resp.getWriter().println("Database loading failed. Check connection");
+                resp.getWriter().println("There is no card or category with such id!");
             }
         }
         else {
@@ -121,19 +114,14 @@ public class CardServlet extends HttpServlet {
         ObjectMapper objectMapper = new ObjectMapper();
         String id = req.getParameter("id");
         if (id != null) {
-            try (CardRepository cardRepository = new CardRepository()) {
-                Card cardToDelete = cardRepository.get(Integer.parseInt(id));
-                if (cardToDelete != null) {
-                    cardRepository.delete(cardToDelete);
-                    resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(cardToDelete)));
-                } else {
-                    resp.setStatus(400);
-                    resp.getWriter().println("There is no card with such id!");
-                }
-            } catch (Exception e) {
+            Card cardToDelete = (Card) DAO.getObjectById(Integer.parseInt(id), Card.class);
+            DAO.closeOpenedSession();
+            if (cardToDelete != null) {
+                DAO.deleteObject(cardToDelete);
+                resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(cardToDelete)));
+            } else {
                 resp.setStatus(400);
-                resp.getWriter().println("Database loading failed. Check connection");
+                resp.getWriter().println("There is no card with such id!");
             }
         }
         else {
