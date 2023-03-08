@@ -1,6 +1,7 @@
 package com.iaroslaveremeev.servlets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iaroslaveremeev.DAO.DAO;
 import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.User;
 import com.iaroslaveremeev.repository.UserRepository;
@@ -24,20 +25,13 @@ public class RegistrationServlet extends HttpServlet {
         String password = req.getParameter("password");
         String name = req.getParameter("name");
         if(login != null && password != null && name != null) {
-            try(UserRepository userRepository = new UserRepository()) {
-                User user = new User(login, password, name);
-                if (userRepository.add(user)) {
-                    resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
-                }
-                else {
-                    resp.getWriter().println("Registration failed. Check if you used parameters correctly");
-                    resp.setStatus(400);
-                }
-            } catch (Exception e) {
-                resp.getWriter().println("Database loading failed. Check connection");
-                resp.setStatus(400);
-            }
+            User user = new User(login, password, name);
+            DAO.addObject(user);
+            resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
+        }
+        else {
+            resp.getWriter().println("Registration failed. Check if you used parameters correctly");
+            resp.setStatus(400);
         }
     }
 }
