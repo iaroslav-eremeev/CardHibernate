@@ -1,70 +1,38 @@
 package com.iaroslaveremeev.model;
 
-import java.util.Objects;
+import lombok.*;
+import org.hibernate.annotations.Cascade;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "categories")
+@Data
+@NoArgsConstructor
+@RequiredArgsConstructor
 
 public class Category {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+    @Column(nullable = false)
+    @NonNull
     private String name;
-    private int userId;
+    @NonNull
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    public Category() {
-    }
+    @ToString.Exclude
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
+    @Cascade(value = org.hibernate.annotations.CascadeType.DELETE)
+    private List<Card> cardList = new ArrayList<>();
 
-    public Category(int id, String name, int userId) {
-        this.id = id;
-        this.name = name;
-        this.userId = userId;
-    }
-
-    public Category(String name, int userId) {
-        this.name = name;
-        this.userId = userId;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Category category = (Category) o;
-        return id == category.id && userId == category.userId && Objects.equals(name, category.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, userId);
-    }
-
-    @Override
-    public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", userId=" + userId +
-                '}';
+    public void addCard(Card card){
+        this.cardList.add(card);
     }
 }

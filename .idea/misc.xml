@@ -9,6 +9,8 @@
       <list>
         <option value="$PROJECT_DIR$/CardDB/pom.xml" />
         <option value="$PROJECT_DIR$/CardFX/pom.xml" />
+        <option value="$PROJECT_DIR$/CardHibernateDB/pom.xml" />
+        <option value="$PROJECT_DIR$/CardHibernateFX/pom.xml" />
       </list>
     </option>
   </component>
