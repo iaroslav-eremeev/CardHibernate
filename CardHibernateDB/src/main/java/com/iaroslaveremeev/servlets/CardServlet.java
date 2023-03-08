@@ -5,6 +5,7 @@ import com.iaroslaveremeev.DAO.DAO;
 import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.Card;
 import com.iaroslaveremeev.model.Category;
+import com.iaroslaveremeev.model.User;
 import com.iaroslaveremeev.util.Unicode;
 
 import javax.servlet.annotation.WebServlet;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet("/cards")
 public class CardServlet extends HttpServlet {
@@ -50,53 +52,27 @@ public class CardServlet extends HttpServlet {
        ObjectMapper objectMapper = new ObjectMapper();
        String id = req.getParameter("id");
        String categoryId = req.getParameter("categoryId");
-       String userId = req.getParameter("userId");
        if (id != null){
-           try (CardRepository cardRepository = new CardRepository()){
-               Card card = cardRepository.get(Integer.parseInt(id));
-               if (card != null){
-                   resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(card)));
-               }
-               else {
-                   resp.setStatus(400);
-                   resp.getWriter().println("There is no card with such id!");
-               }
-           } catch (Exception e){
+           Card card = (Card) DAO.getObjectById(Integer.parseInt(id), Card.class);
+           DAO.closeOpenedSession();
+           if (card != null){
+               resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(card)));
+           }
+           else {
                resp.setStatus(400);
-               resp.getWriter().println("Database loading failed. Check connection");
+               resp.getWriter().println("There is no card with such id!");
            }
        }
        else if (categoryId != null){
-           try (CardRepository cardRepository = new CardRepository();
-                CategoryRepository categoryRepository = new CategoryRepository()){
-                if (categoryRepository.get(Integer.parseInt(categoryId)) != null){
-                    ArrayList<Card> cards = cardRepository.getCardsByCatId(Integer.parseInt(categoryId));
-                    resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(cards)));
-                }
-                else {
-                    resp.setStatus(400);
-                    resp.getWriter().println("There is no category with such id!");
-                }
-           } catch (Exception e){
-               resp.setStatus(400);
-               resp.getWriter().println("Database loading failed. Check connection");
-           }
-       }
-       else if (userId != null){
-           try (CardRepository cardRepository = new CardRepository();
-                UserRepository userRepository = new UserRepository()){
-               if (userRepository.get(Integer.parseInt(userId)) != null){
-                   ArrayList<Card> cards = cardRepository.getCardsByUserId(Integer.parseInt(userId));
-                   resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(cards)));
-               }
-               else {
-                   resp.setStatus(400);
-                   resp.getWriter().println("There is no user with such id!");
-               }
-           } catch (Exception e){
-               resp.setStatus(400);
-               resp.getWriter().println("Database loading failed. Check connection");
-           }
+            Category category = (Category) DAO.getObjectById(Integer.parseInt(categoryId), Category.class);
+            if (category != null){
+                List cards = DAO.getObjectsByParam("categoryId", categoryId, Card.class);
+                resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(cards)));
+            }
+            else {
+                resp.setStatus(400);
+                resp.getWriter().println("There is no category with such id!");
+            }
        }
        else {
             resp.setStatus(400);
