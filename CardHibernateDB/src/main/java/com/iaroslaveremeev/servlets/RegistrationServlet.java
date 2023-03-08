@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iaroslaveremeev.DAO.DAO;
 import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.User;
-import com.iaroslaveremeev.repository.UserRepository;
 import com.iaroslaveremeev.util.Unicode;
 
 import javax.servlet.annotation.WebServlet;

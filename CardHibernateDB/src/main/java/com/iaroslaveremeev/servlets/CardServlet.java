@@ -3,9 +3,6 @@ package com.iaroslaveremeev.servlets;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.Card;
-import com.iaroslaveremeev.repository.CardRepository;
-import com.iaroslaveremeev.repository.CategoryRepository;
-import com.iaroslaveremeev.repository.UserRepository;
 import com.iaroslaveremeev.util.Unicode;
 
 import javax.servlet.annotation.WebServlet;
@@ -13,10 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 
 @WebServlet("/cards")
 public class CardServlet extends HttpServlet {

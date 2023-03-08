@@ -1,10 +1,10 @@
 package com.iaroslaveremeev.servlets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iaroslaveremeev.DAO.DAO;
 import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.Category;
-import com.iaroslaveremeev.repository.CategoryRepository;
-import com.iaroslaveremeev.repository.UserRepository;
+import com.iaroslaveremeev.model.User;
 import com.iaroslaveremeev.util.Unicode;
 
 import javax.servlet.annotation.WebServlet;
@@ -23,37 +23,15 @@ public class CategoryServlet extends HttpServlet {
         Unicode.setUnicode(req, resp);
         ObjectMapper objectMapper = new ObjectMapper();
         String id = req.getParameter("id");
-        String userId = req.getParameter("userId");
-        if (id != null || userId != null){
-            try (CategoryRepository categoryRepository = new CategoryRepository()){
-                // Get category by its id
-                if (id != null){
-                    Category category = categoryRepository.get(Integer.parseInt(id));
-                    if (category != null){
-                        resp.getWriter()
-                                .println(objectMapper.writeValueAsString(new ResponseResult<>(category)));
-                    }
-                    else {
-                        resp.setStatus(400);
-                        resp.getWriter().println("No category with such id found!");
-                    }
-                }
-                // get all the categories for selected user by their id
-                else {
-                    List<Category> categories = categoryRepository
-                            .getCategoriesByUserId(Integer.parseInt(userId));
-                    if (categories.size() > 0){
-                        resp.getWriter()
-                                .println(objectMapper.writeValueAsString(new ResponseResult<>(categories)));
-                    }
-                    else {
-                        resp.setStatus(400);
-                        resp.getWriter().println("The selected user has no categories!");
-                    }
-                }
-            } catch (Exception e) {
+        // Get category by its id
+        if (id != null){
+            Category category = (Category) DAO.getObjectById(Integer.parseInt(id), Category.class);
+            if (category != null){
+                resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(category)));
+            }
+            else {
                 resp.setStatus(400);
-                resp.getWriter().println("Database loading failed. Check connection");
+                resp.getWriter().println("No category with such id found!");
             }
         }
         else {
@@ -70,22 +48,16 @@ public class CategoryServlet extends HttpServlet {
         String name = req.getParameter("name");
         String userId = req.getParameter("userId");
         if(name != null && userId != null) {
-            try (CategoryRepository categoryRepository = new CategoryRepository();
-                 UserRepository userRepository = new UserRepository()) {
-                // Check if user with such id exists
-                if (userRepository.get(Integer.parseInt(userId)) != null) {
-                    Category category = new Category(name, Integer.parseInt(userId));
-                    categoryRepository.addCategory(category);
-                    resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(category)));
-
-                } else {
-                    resp.setStatus(400);
-                    resp.getWriter().println("There is no user with such id!");
-                }
-            } catch (Exception e){
+            // Check if user with such id exists
+            User user = (User) DAO.getObjectById(Integer.parseInt(userId), User.class);
+            DAO.closeOpenedSession();
+            if (user != null) {
+                Category category = new Category(name, user);
+                DAO.addObject(category);
+                resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(category)));
+            } else {
                 resp.setStatus(400);
-                resp.getWriter().println("Database loading failed. Check connection");
+                resp.getWriter().println("There is no user with such id!");
             }
         }
         else {

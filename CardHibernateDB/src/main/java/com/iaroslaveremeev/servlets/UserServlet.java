@@ -55,8 +55,7 @@ public class UserServlet extends HttpServlet {
                 String userPassword = user.getPassword();
                 if (login.equals(user.getLogin()) && password.equals(userPassword)){
                     success = true;
-                    resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
+                    resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
                 }
             }
             if (!success) {
@@ -81,8 +80,7 @@ public class UserServlet extends HttpServlet {
             DAO.closeOpenedSession();
             if (userToDelete != null){
                 DAO.deleteObject(userToDelete);
-                resp.getWriter()
-                        .println(objectMapper.writeValueAsString(new ResponseResult<>(userToDelete)));
+                resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(userToDelete)));
             }
             else {
                 resp.setStatus(400);
