@@ -75,23 +75,21 @@ public class UserServlet extends HttpServlet {
         Unicode.setUnicode(req, resp);
         ObjectMapper objectMapper = new ObjectMapper();
         String id = req.getParameter("id");
-        try (UserRepository userRepository = new UserRepository()) {
-            if(id != null){
-                User userToDelete = userRepository.get(Integer.parseInt(id));
-                if (userToDelete != null){
-                    userRepository.delete(userToDelete);
-                    resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(userToDelete)));
-                }
-                else {
-                    resp.setStatus(400);
-                    resp.getWriter().println("There is no user with such id!");
-                }
+        if(id != null){
+            User userToDelete = (User) DAO.getObjectById(Integer.parseInt(id), User.class);
+            if (userToDelete != null){
+                DAO.deleteObject(userToDelete);
+                resp.getWriter()
+                        .println(objectMapper.writeValueAsString(new ResponseResult<>(userToDelete)));
             }
             else {
                 resp.setStatus(400);
-                resp.getWriter().println("Incorrect id input!");
+                resp.getWriter().println("There is no user with such id!");
             }
+        }
+        else {
+            resp.setStatus(400);
+            resp.getWriter().println("Incorrect id input!");
         }
     }
 }
