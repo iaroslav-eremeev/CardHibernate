@@ -39,26 +39,26 @@ public class UserServlet extends HttpServlet {
         }
     }
 
-    // User authorization method
+    // User registration and authorization method
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Unicode.setUnicode(req, resp);
         ObjectMapper objectMapper = new ObjectMapper();
         String login = req.getParameter("login");
         String password = req.getParameter("password");
-        boolean success = false;
-        if(login != null && password != null) {
+        boolean successAuth = false;
+        // Authorization
+        if (login != null && password != null) {
             List users = DAO.getAllObjects(User.class);
             DAO.closeOpenedSession();
             for (int i = 0; i < users.size(); i++) {
                 User user = (User) users.get(i);
-                String userPassword = user.getPassword();
-                if (login.equals(user.getLogin()) && password.equals(userPassword)){
-                    success = true;
+                if (login.equals(user.getLogin()) && password.equals(user.getPassword())){
+                    successAuth = true;
                     resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
                 }
             }
-            if (!success) {
+            if (!successAuth) {
                 resp.setStatus(400);
                 resp.getWriter().println("Authorization failure. Wrong login or password");
             }

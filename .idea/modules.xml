@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/CardHibernate.iml" filepath="$PROJECT_DIR$/.idea/CardHibernate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CardHibernateDB/CardHibernateDB.iml" filepath="$PROJECT_DIR$/CardHibernateDB/CardHibernateDB.iml" />
     </modules>
   </component>
 </project>

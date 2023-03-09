@@ -53,6 +53,7 @@ public class UserRepository {
             alert.show();
             return null;
         } catch (FailedLoginException e) {
+            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, "Wrong login or password!");
             alert.show();
             return null;
