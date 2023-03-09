@@ -24,13 +24,13 @@ public class User {
     @NonNull
     private String login;
 
-    @Column(name = "name", nullable = false)
-    @NonNull
-    private String name;
-
     @Column(name = "password", nullable = false)
     @NonNull
     private String password;
+
+    @Column(name = "name", nullable = false)
+    @NonNull
+    private String name;
 
     @Column(name = "regDate")
     @NonNull
