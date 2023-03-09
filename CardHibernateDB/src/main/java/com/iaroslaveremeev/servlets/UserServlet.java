@@ -24,7 +24,6 @@ public class UserServlet extends HttpServlet {
         String id = req.getParameter("id");
         if (id != null){
             User user = (User) DAO.getObjectById(Integer.parseInt(id), User.class);
-            DAO.closeOpenedSession();
             if (user != null) {
                 resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
             }
@@ -32,6 +31,7 @@ public class UserServlet extends HttpServlet {
                 resp.setStatus(400);
                 resp.getWriter().println("There is no user with such id!");
             }
+            DAO.closeOpenedSession();
         }
         else {
             resp.setStatus(400);
@@ -50,7 +50,6 @@ public class UserServlet extends HttpServlet {
         // Authorization
         if (login != null && password != null) {
             List users = DAO.getAllObjects(User.class);
-            DAO.closeOpenedSession();
             for (int i = 0; i < users.size(); i++) {
                 User user = (User) users.get(i);
                 if (login.equals(user.getLogin()) && password.equals(user.getPassword())){
@@ -62,6 +61,7 @@ public class UserServlet extends HttpServlet {
                 resp.setStatus(400);
                 resp.getWriter().println("Authorization failure. Wrong login or password");
             }
+            DAO.closeOpenedSession();
         }
         else {
             resp.setStatus(400);
@@ -77,7 +77,6 @@ public class UserServlet extends HttpServlet {
         String id = req.getParameter("id");
         if(id != null){
             User userToDelete = (User) DAO.getObjectById(Integer.parseInt(id), User.class);
-            DAO.closeOpenedSession();
             if (userToDelete != null){
                 DAO.deleteObject(userToDelete);
                 resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(userToDelete)));
@@ -86,6 +85,7 @@ public class UserServlet extends HttpServlet {
                 resp.setStatus(400);
                 resp.getWriter().println("There is no user with such id!");
             }
+            DAO.closeOpenedSession();
         }
         else {
             resp.setStatus(400);
