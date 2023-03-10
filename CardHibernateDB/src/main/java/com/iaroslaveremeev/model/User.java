@@ -1,5 +1,8 @@
 package com.iaroslaveremeev.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
 
@@ -37,6 +40,7 @@ public class User {
     private Date regDate = new Date();
 
     @ToString.Exclude
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     @Cascade(value = org.hibernate.annotations.CascadeType.DELETE)
     private List<Category> categoryList = new ArrayList<>();

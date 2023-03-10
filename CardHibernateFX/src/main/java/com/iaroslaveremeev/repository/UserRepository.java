@@ -49,11 +49,11 @@ public class UserRepository {
             ResponseResult<User> result = mapper.readValue(inputStream, new TypeReference<>() {});
             return result.getData();
         } catch (IOException | IllegalArgumentException e) {
+            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, "Server error. Check connection!");
             alert.show();
             return null;
         } catch (FailedLoginException e) {
-            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, "Wrong login or password!");
             alert.show();
             return null;

@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import static javafx.application.Application.launch;
@@ -19,8 +20,8 @@ public class Program extends Application {
     public static void main(String[] args) {
         launch();
     }
-    public void start(Stage stage) throws IOException {
-        if (Preferences.userRoot().node("userId") == null){
+    public void start(Stage stage) throws IOException, BackingStoreException {
+        if (!Preferences.userRoot().nodeExists("userId")){
             scene = new Scene(loadFXML("/authorization"), 600, 300);
         }
         else {

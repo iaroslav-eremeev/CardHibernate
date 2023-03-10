@@ -1,5 +1,8 @@
 package com.iaroslaveremeev.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
 
@@ -24,10 +27,11 @@ public class Category {
     private String name;
     @NonNull
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
     @ToString.Exclude
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
     @Cascade(value = org.hibernate.annotations.CascadeType.DELETE)
     private List<Card> cardList = new ArrayList<>();

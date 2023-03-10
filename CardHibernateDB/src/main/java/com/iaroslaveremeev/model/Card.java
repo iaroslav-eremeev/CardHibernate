@@ -1,5 +1,7 @@
 package com.iaroslaveremeev.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -27,6 +29,7 @@ public class Card {
     @NonNull
     private String answer;
     @ManyToOne
+    @JsonIgnore
     @NonNull
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;

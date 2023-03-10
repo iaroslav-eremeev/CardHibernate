@@ -7,11 +7,13 @@ import com.iaroslaveremeev.model.Category;
 import com.iaroslaveremeev.model.User;
 import com.iaroslaveremeev.util.Unicode;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/categories")
 public class CategoryServlet extends HttpServlet {
@@ -22,6 +24,7 @@ public class CategoryServlet extends HttpServlet {
         Unicode.setUnicode(req, resp);
         ObjectMapper objectMapper = new ObjectMapper();
         String id = req.getParameter("id");
+        String userId = req.getParameter("userId");
         // Get category by its id
         if (id != null){
             Category category = (Category) DAO.getObjectById(Integer.parseInt(id), Category.class);
@@ -32,6 +35,11 @@ public class CategoryServlet extends HttpServlet {
                 resp.setStatus(400);
                 resp.getWriter().println("No category with such id found!");
             }
+        }
+        // Get categories by user id
+        else if (userId != null){
+            List categories = DAO.getObjectsByParam("userId", Integer.parseInt(userId), Category.class);
+            resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(categories)));
         }
         else {
             resp.setStatus(400);
