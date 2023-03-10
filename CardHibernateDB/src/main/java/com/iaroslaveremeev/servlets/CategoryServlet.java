@@ -38,8 +38,10 @@ public class CategoryServlet extends HttpServlet {
         }
         // Get categories by user id
         else if (userId != null){
-            List categories = DAO.getObjectsByParam("userId", Integer.parseInt(userId), Category.class);
+            List categories = DAO.getObjectsByParam("user",
+                    DAO.getObjectById(Integer.parseInt(userId), User.class), Category.class);
             resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(categories)));
+            DAO.closeOpenedSession();
         }
         else {
             resp.setStatus(400);
