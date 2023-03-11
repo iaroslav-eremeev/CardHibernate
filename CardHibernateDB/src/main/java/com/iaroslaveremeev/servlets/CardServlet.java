@@ -40,17 +40,14 @@ public class CardServlet extends HttpServlet {
         else if (categoryId != null){
             Category category = (Category) DAO.getObjectById(Integer.parseInt(categoryId), Category.class);
             if (category != null){
-                List cards = DAO.getObjectsByParam("category",
-                        DAO.getObjectById(Integer.parseInt(categoryId), Category.class),
-                        Card.class);
+                List cards = DAO.getObjectsByParam("category", category, Card.class);
                 resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(cards)));
-                DAO.closeOpenedSession();
             }
             else {
                 resp.setStatus(400);
                 resp.getWriter().println("There is no category with such id!");
-                DAO.closeOpenedSession();
             }
+            DAO.closeOpenedSession();
         }
         else {
             resp.setStatus(400);
@@ -71,6 +68,7 @@ public class CardServlet extends HttpServlet {
             Category category = (Category) DAO.getObjectById(Integer.parseInt(categoryId), Category.class);
             if (category != null) {
                 Card card = new Card(question, answer, category);
+                DAO.addObject(card);
                 resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(card)));
             } else {
                 resp.setStatus(400);

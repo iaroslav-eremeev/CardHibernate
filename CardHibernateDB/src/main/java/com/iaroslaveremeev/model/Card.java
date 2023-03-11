@@ -17,7 +17,6 @@ import java.util.Date;
 @RequiredArgsConstructor
 
 public class Card {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -33,7 +32,7 @@ public class Card {
     @NonNull
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-    @Column (nullable = false)
+    @Column
     @NonNull
     private Date creationDate = new Date();
 }

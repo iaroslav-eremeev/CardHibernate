@@ -44,12 +44,15 @@ public class CategoryRepository {
         try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/categories?" +
                 "&id=" + catId, "GET")) {
             ObjectMapper mapper = new ObjectMapper();
-            // If user has no categories yet we should return empty ArrayList
-            // to avoid IllegalArgumentException
+            if (inputStream == null) throw new IllegalArgumentException();
             ResponseResult<Category> result = mapper.readValue(inputStream, new TypeReference<>() {});
             return result.getData();
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Category not uploaded!");
+            alert.show();
+            return null;
+        } catch (IllegalArgumentException e){
+            Alert alert = new Alert(Alert.AlertType.ERROR, "No category with such id found!");
             alert.show();
             return null;
         }
@@ -57,7 +60,8 @@ public class CategoryRepository {
 
     public Category addCategory(String name, int userId){
         try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/categories?" +
-                "&name=" + name + "&userId=" + userId, "POST")) {
+                "&name=" + URLEncoder.encode(name, StandardCharsets.UTF_8) +
+                "&userId=" + userId, "POST")) {
             ObjectMapper mapper = new ObjectMapper();
             ResponseResult<Category> result = mapper.readValue(inputStream, new TypeReference<>() {});
             return result.getData();

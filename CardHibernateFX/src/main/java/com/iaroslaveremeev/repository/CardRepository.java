@@ -24,7 +24,8 @@ public class CardRepository {
         try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/cards?" +
                 "&categoryId=" + categoryId, "GET")) {
             ObjectMapper mapper = new ObjectMapper();
-            // If category has no cards yet we should return empty ArrayList to avoid IllegalArgumentException
+            // If category has no cards yet we should return empty ArrayList
+            // to avoid IllegalArgumentException
             if (inputStream == null) return new ArrayList<>();
             ResponseResult<List<Card>> result = mapper.readValue(inputStream, new TypeReference<>() {});
             return result.getData();

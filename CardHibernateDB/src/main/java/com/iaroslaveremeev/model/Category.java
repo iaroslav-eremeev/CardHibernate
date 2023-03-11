@@ -17,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 
 public class Category {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
