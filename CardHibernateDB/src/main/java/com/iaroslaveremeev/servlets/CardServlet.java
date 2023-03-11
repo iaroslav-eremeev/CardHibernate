@@ -19,6 +19,45 @@ import java.util.List;
 @WebServlet("/cards")
 public class CardServlet extends HttpServlet {
 
+    // Get card by its id or respective category id
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Unicode.setUnicode(req, resp);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String id = req.getParameter("id");
+        String categoryId = req.getParameter("categoryId");
+        if (id != null){
+            Card card = (Card) DAO.getObjectById(Integer.parseInt(id), Card.class);
+            if (card != null){
+                resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(card)));
+            }
+            else {
+                resp.setStatus(400);
+                resp.getWriter().println("There is no card with such id!");
+            }
+            DAO.closeOpenedSession();
+        }
+        else if (categoryId != null){
+            Category category = (Category) DAO.getObjectById(Integer.parseInt(categoryId), Category.class);
+            if (category != null){
+                List cards = DAO.getObjectsByParam("category",
+                        DAO.getObjectById(Integer.parseInt(categoryId), Category.class),
+                        Card.class);
+                resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(cards)));
+                DAO.closeOpenedSession();
+            }
+            else {
+                resp.setStatus(400);
+                resp.getWriter().println("There is no category with such id!");
+                DAO.closeOpenedSession();
+            }
+        }
+        else {
+            resp.setStatus(400);
+            resp.getWriter().println("Incorrect id input");
+        }
+    }
+
     // Add card to the category with certain id
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -30,56 +69,19 @@ public class CardServlet extends HttpServlet {
         if(question != null && answer != null && categoryId != null) {
             // Check if category with such id exists
             Category category = (Category) DAO.getObjectById(Integer.parseInt(categoryId), Category.class);
-            DAO.closeOpenedSession();
             if (category != null) {
                 Card card = new Card(question, answer, category);
                 resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(card)));
-
             } else {
                 resp.setStatus(400);
                 resp.getWriter().println("There is no category with such id!");
             }
+            DAO.closeOpenedSession();
         }
         else {
             resp.setStatus(400);
             resp.getWriter().println("Incorrect card question, answer or category id input");
         }
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-       Unicode.setUnicode(req, resp);
-       ObjectMapper objectMapper = new ObjectMapper();
-       String id = req.getParameter("id");
-       String categoryId = req.getParameter("categoryId");
-       if (id != null){
-           Card card = (Card) DAO.getObjectById(Integer.parseInt(id), Card.class);
-           DAO.closeOpenedSession();
-           if (card != null){
-               resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(card)));
-           }
-           else {
-               resp.setStatus(400);
-               resp.getWriter().println("There is no card with such id!");
-           }
-       }
-       else if (categoryId != null){
-            Category category = (Category) DAO.getObjectById(Integer.parseInt(categoryId), Category.class);
-            DAO.closeOpenedSession();
-            if (category != null){
-                List cards = DAO.getObjectsByParam("categoryId", categoryId, Card.class);
-                DAO.closeOpenedSession();
-                resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(cards)));
-            }
-            else {
-                resp.setStatus(400);
-                resp.getWriter().println("There is no category with such id!");
-            }
-       }
-       else {
-            resp.setStatus(400);
-            resp.getWriter().println("Incorrect id input");
-       }
     }
 
     @Override
@@ -92,7 +94,6 @@ public class CardServlet extends HttpServlet {
         String categoryId = req.getParameter("categoryId");
         if (id != null && question != null && answer != null && categoryId != null){
             Card card = (Card) DAO.getObjectById(Integer.parseInt(id), Card.class);
-            DAO.closeOpenedSession();
             if (card != null){
                 DAO.updateObject(card);
                 resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(card)));
@@ -101,6 +102,7 @@ public class CardServlet extends HttpServlet {
                 resp.setStatus(400);
                 resp.getWriter().println("There is no card or category with such id!");
             }
+            DAO.closeOpenedSession();
         }
         else {
             resp.setStatus(400);
@@ -115,7 +117,6 @@ public class CardServlet extends HttpServlet {
         String id = req.getParameter("id");
         if (id != null) {
             Card cardToDelete = (Card) DAO.getObjectById(Integer.parseInt(id), Card.class);
-            DAO.closeOpenedSession();
             if (cardToDelete != null) {
                 DAO.deleteObject(cardToDelete);
                 resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(cardToDelete)));
@@ -123,6 +124,7 @@ public class CardServlet extends HttpServlet {
                 resp.setStatus(400);
                 resp.getWriter().println("There is no card with such id!");
             }
+            DAO.closeOpenedSession();
         }
         else {
             resp.setStatus(400);
