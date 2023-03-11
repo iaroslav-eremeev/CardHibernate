@@ -44,7 +44,8 @@ public class CategoryRepository {
         try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/categories?" +
                 "&id=" + catId, "GET")) {
             ObjectMapper mapper = new ObjectMapper();
-            // If user has no categories yet we should return empty ArrayList to avoid IllegalArgumentException
+            // If user has no categories yet we should return empty ArrayList
+            // to avoid IllegalArgumentException
             ResponseResult<Category> result = mapper.readValue(inputStream, new TypeReference<>() {});
             return result.getData();
         } catch (IOException e) {

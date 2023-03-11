@@ -59,7 +59,6 @@ public class CategoryServlet extends HttpServlet {
         if(name != null && userId != null) {
             // Check if user with such id exists
             User user = (User) DAO.getObjectById(Integer.parseInt(userId), User.class);
-            DAO.closeOpenedSession();
             if (user != null) {
                 Category category = new Category(name, user);
                 DAO.addObject(category);
@@ -68,6 +67,7 @@ public class CategoryServlet extends HttpServlet {
                 resp.setStatus(400);
                 resp.getWriter().println("There is no user with such id!");
             }
+            DAO.closeOpenedSession();
         }
         else {
             resp.setStatus(400);
@@ -97,6 +97,7 @@ public class CategoryServlet extends HttpServlet {
                     resp.setStatus(400);
                     resp.getWriter().println("There is no user with such user id!");
                 }
+                DAO.closeOpenedSession();
             }
             else {
                 resp.setStatus(400);
@@ -125,6 +126,7 @@ public class CategoryServlet extends HttpServlet {
                 resp.setStatus(400);
                 resp.getWriter().println("There is no category with such id!");
             }
+            DAO.closeOpenedSession();
         }
         else {
             resp.setStatus(400);
