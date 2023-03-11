@@ -35,6 +35,7 @@ public class CategoryServlet extends HttpServlet {
                 resp.setStatus(400);
                 resp.getWriter().println("No category with such id found!");
             }
+            DAO.closeOpenedSession();
         }
         // Get categories by user id
         else if (userId != null){
