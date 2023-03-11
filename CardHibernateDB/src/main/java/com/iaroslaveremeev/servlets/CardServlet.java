@@ -92,7 +92,13 @@ public class CardServlet extends HttpServlet {
         String categoryId = req.getParameter("categoryId");
         if (id != null && question != null && answer != null && categoryId != null){
             Card card = (Card) DAO.getObjectById(Integer.parseInt(id), Card.class);
+            DAO.closeOpenedSession();
             if (card != null){
+                card.setQuestion(question);
+                card.setAnswer(answer);
+                Category category = (Category) DAO.getObjectById(Integer.parseInt(categoryId), Category.class);
+                DAO.closeOpenedSession();
+                card.setCategory(category);
                 DAO.updateObject(card);
                 resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(card)));
             }
@@ -100,7 +106,6 @@ public class CardServlet extends HttpServlet {
                 resp.setStatus(400);
                 resp.getWriter().println("There is no card or category with such id!");
             }
-            DAO.closeOpenedSession();
         }
         else {
             resp.setStatus(400);
