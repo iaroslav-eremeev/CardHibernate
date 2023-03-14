@@ -66,6 +66,7 @@ public class CardServlet extends HttpServlet {
         if(question != null && answer != null && categoryId != null) {
             // Check if category with such id exists
             Category category = (Category) DAO.getObjectById(Integer.parseInt(categoryId), Category.class);
+            DAO.closeOpenedSession();
             if (category != null) {
                 Card card = new Card(question, answer, category);
                 DAO.addObject(card);
@@ -74,7 +75,6 @@ public class CardServlet extends HttpServlet {
                 resp.setStatus(400);
                 resp.getWriter().println("There is no category with such id!");
             }
-            DAO.closeOpenedSession();
         }
         else {
             resp.setStatus(400);
